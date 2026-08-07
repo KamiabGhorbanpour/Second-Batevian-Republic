@@ -1,0 +1,711 @@
+{
+  "initial": {
+    "civilians": 130,
+    "resources": 120,
+    "popularity": 130
+  },
+  "ministries": [
+    {
+      "id": "education",
+      "name": "Ministry of Education",
+      "shortName": "Education",
+      "role": "Knowledge and youth",
+      "image": "/scenes/education.webp",
+      "alt": "Students working among library shelves"
+    },
+    {
+      "id": "foreign",
+      "name": "Ministry of Foreign Affairs",
+      "shortName": "Foreign Affairs",
+      "role": "War and diplomacy",
+      "image": "/scenes/war.webp",
+      "alt": "Officials gathered around a world map"
+    },
+    {
+      "id": "interior",
+      "name": "Ministry of the Interior",
+      "shortName": "Interior",
+      "role": "Security and public order",
+      "image": "/scenes/order.webp",
+      "alt": "A municipal security control room"
+    },
+    {
+      "id": "social",
+      "name": "Ministry of Social Affairs",
+      "shortName": "Social Affairs",
+      "role": "Work and welfare",
+      "image": "/scenes/work.webp",
+      "alt": "Workers gathered in a municipal office"
+    }
+  ],
+  "rounds": [
+    {
+      "title": "The first test",
+      "subtitle": "A new cabinet inherits a city already under pressure.",
+      "decisions": {
+        "education": [
+          {
+            "title": "The thinking city",
+            "brief": "AI tutors have spread through every school. Results are rising, but teachers warn that pupils are learning to obey answers rather than understand them.",
+            "question": "What place should AI have in the classroom?",
+            "choices": [
+              {
+                "title": "Open every system",
+                "detail": "Give every pupil unrestricted access.",
+                "result": "Access expands overnight, but confidence in public schools fractures.",
+                "effects": {
+                  "civilians": -8,
+                  "resources": -6,
+                  "popularity": -14,
+                  "influence": 12
+                }
+              },
+              {
+                "title": "Keep a human in the room",
+                "detail": "Fund supervised use, training and audits.",
+                "result": "The programme is costly, but teachers turn machines into tools.",
+                "effects": {
+                  "civilians": 6,
+                  "resources": -14,
+                  "popularity": 10,
+                  "influence": 8
+                }
+              },
+              {
+                "title": "Ban it from schools",
+                "detail": "Protect the old curriculum.",
+                "result": "Classrooms regain their rhythm while wealthy families buy the advantage elsewhere.",
+                "effects": {
+                  "civilians": 2,
+                  "resources": -3,
+                  "popularity": -9,
+                  "influence": 5
+                }
+              }
+            ]
+          },
+          {
+            "title": "A school for every district",
+            "brief": "Population growth has filled classrooms beyond capacity. The treasury can fund buildings quickly or improve teaching slowly.",
+            "question": "Where should the education budget go?",
+            "choices": [
+              {
+                "title": "Build now",
+                "detail": "Open modular schools in every crowded district.",
+                "result": "Capacity rises quickly; quality varies from street to street.",
+                "effects": {
+                  "civilians": 8,
+                  "resources": -16,
+                  "popularity": 9,
+                  "influence": 9
+                }
+              },
+              {
+                "title": "Invest in teachers",
+                "detail": "Raise pay and reduce class sizes over time.",
+                "result": "The waiting list remains, but the profession begins to recover.",
+                "effects": {
+                  "civilians": 6,
+                  "resources": -12,
+                  "popularity": 12,
+                  "influence": 7
+                }
+              },
+              {
+                "title": "Invite private partners",
+                "detail": "Let companies finance new academies.",
+                "result": "New schools open with new sponsors—and new inequalities.",
+                "effects": {
+                  "civilians": -4,
+                  "resources": 5,
+                  "popularity": -5,
+                  "influence": 13
+                }
+              }
+            ]
+          }
+        ],
+        "foreign": [
+          {
+            "title": "The distant front",
+            "brief": "A neighbouring state asks for protection as an enemy army crosses its frontier. Allies demand resolve; the streets fear another generation sent away.",
+            "question": "How far will the city enter the war?",
+            "choices": [
+              {
+                "title": "Intervene openly",
+                "detail": "Send forces and make the alliance credible.",
+                "result": "The city keeps its promise. Casualty lists arrive before the speeches end.",
+                "effects": {
+                  "civilians": -20,
+                  "resources": -25,
+                  "popularity": 8,
+                  "influence": 16
+                }
+              },
+              {
+                "title": "Arm them quietly",
+                "detail": "Provide intelligence, medicine and weapons.",
+                "result": "The front holds. Official neutrality becomes a useful fiction.",
+                "effects": {
+                  "civilians": -8,
+                  "resources": -14,
+                  "popularity": 5,
+                  "influence": 11
+                }
+              },
+              {
+                "title": "Close the border",
+                "detail": "Declare neutrality and preserve the city.",
+                "result": "The gates close as refugees gather on the other side.",
+                "effects": {
+                  "civilians": 3,
+                  "resources": -4,
+                  "popularity": -15,
+                  "influence": 4
+                }
+              }
+            ]
+          },
+          {
+            "title": "The refugee train",
+            "brief": "The first trains from the frontier arrive before dawn. Municipal shelters are full and cameras are waiting.",
+            "question": "What promise will you make at the station?",
+            "choices": [
+              {
+                "title": "Offer sanctuary",
+                "detail": "Accept arrivals and requisition housing.",
+                "result": "Thousands find safety; the city absorbs a sudden, visible strain.",
+                "effects": {
+                  "civilians": 10,
+                  "resources": -18,
+                  "popularity": 8,
+                  "influence": 12
+                }
+              },
+              {
+                "title": "Share the burden",
+                "detail": "Negotiate quotas with allied cities.",
+                "result": "Diplomacy works slowly, distributing both people and responsibility.",
+                "effects": {
+                  "civilians": 5,
+                  "resources": -9,
+                  "popularity": 6,
+                  "influence": 9
+                }
+              },
+              {
+                "title": "Temporary admission",
+                "detail": "Open camps outside the city limits.",
+                "result": "The crisis is contained, not resolved.",
+                "effects": {
+                  "civilians": -5,
+                  "resources": -6,
+                  "popularity": -7,
+                  "influence": 7
+                }
+              }
+            ]
+          }
+        ],
+        "interior": [
+          {
+            "title": "Eyes in the street",
+            "brief": "Sabotage and street violence follow the war debate home. The security service offers certainty—if it may watch everyone.",
+            "question": "What kind of order will you impose?",
+            "choices": [
+              {
+                "title": "Build the watchful city",
+                "detail": "Approve mass surveillance and predictive arrests.",
+                "result": "Attacks fall. So do private conversations and public trust.",
+                "effects": {
+                  "civilians": -8,
+                  "resources": -10,
+                  "popularity": -14,
+                  "influence": 15
+                }
+              },
+              {
+                "title": "People, not cameras",
+                "detail": "Fund mediators, services and accountable patrols.",
+                "result": "Order returns unevenly, neighbourhood by neighbourhood.",
+                "effects": {
+                  "civilians": 8,
+                  "resources": -15,
+                  "popularity": 12,
+                  "influence": 8
+                }
+              },
+              {
+                "title": "Declare an emergency",
+                "detail": "Impose curfews and extraordinary powers.",
+                "result": "The streets empty; temporary powers settle into habit.",
+                "effects": {
+                  "civilians": -12,
+                  "resources": -7,
+                  "popularity": -8,
+                  "influence": 13
+                }
+              }
+            ]
+          },
+          {
+            "title": "A march on the square",
+            "brief": "Two rival demonstrations are converging on the same civic square. Police warn that they cannot guarantee calm.",
+            "question": "How will you police the protest?",
+            "choices": [
+              {
+                "title": "Protect both marches",
+                "detail": "Divide the square and deploy trained stewards.",
+                "result": "The day is tense, loud and mostly peaceful.",
+                "effects": {
+                  "civilians": 7,
+                  "resources": -12,
+                  "popularity": 10,
+                  "influence": 8
+                }
+              },
+              {
+                "title": "Ban the demonstrations",
+                "detail": "Close the square before crowds arrive.",
+                "result": "The square stays empty; anger moves into side streets.",
+                "effects": {
+                  "civilians": -7,
+                  "resources": -5,
+                  "popularity": -10,
+                  "influence": 12
+                }
+              },
+              {
+                "title": "Back the loyalists",
+                "detail": "Allow only the pro-government march.",
+                "result": "The cabinet gains a cheering crowd and loses its claim to neutrality.",
+                "effects": {
+                  "civilians": -10,
+                  "resources": -3,
+                  "popularity": 6,
+                  "influence": 16
+                }
+              }
+            ]
+          }
+        ],
+        "social": [
+          {
+            "title": "The price of labour",
+            "brief": "Automation has made the city richer and its citizens less necessary. Employers promise abundance. Workers ask who it is for.",
+            "question": "What future of work will the city finance?",
+            "choices": [
+              {
+                "title": "Protect every job",
+                "detail": "Subsidise wages and slow automation.",
+                "result": "Pay packets survive while the treasury takes the strain.",
+                "effects": {
+                  "civilians": 12,
+                  "resources": -20,
+                  "popularity": 11,
+                  "influence": 11
+                }
+              },
+              {
+                "title": "Automate without apology",
+                "detail": "Let industry replace labour and reinvest.",
+                "result": "Production surges. The unemployed watch from outside the gates.",
+                "effects": {
+                  "civilians": -16,
+                  "resources": 18,
+                  "popularity": -14,
+                  "influence": 15
+                }
+              },
+              {
+                "title": "Create work worth doing",
+                "detail": "Fund housing, care and restoration.",
+                "result": "The city spends deeply and becomes visibly more liveable.",
+                "effects": {
+                  "civilians": 15,
+                  "resources": -18,
+                  "popularity": 14,
+                  "influence": 8
+                }
+              }
+            ]
+          },
+          {
+            "title": "The rent ultimatum",
+            "brief": "Rents have risen for eleven consecutive months. Tenant unions threaten a citywide strike.",
+            "question": "How will you answer the housing crisis?",
+            "choices": [
+              {
+                "title": "Freeze rents",
+                "detail": "Cap increases for two years.",
+                "result": "Tenants breathe again; new construction slows.",
+                "effects": {
+                  "civilians": 12,
+                  "resources": -7,
+                  "popularity": 13,
+                  "influence": 10
+                }
+              },
+              {
+                "title": "Build public housing",
+                "detail": "Borrow heavily and start construction.",
+                "result": "Cranes appear across the city alongside a larger public debt.",
+                "effects": {
+                  "civilians": 15,
+                  "resources": -22,
+                  "popularity": 10,
+                  "influence": 8
+                }
+              },
+              {
+                "title": "Trust the market",
+                "detail": "Relax planning rules and offer tax relief.",
+                "result": "Investment returns first; affordable homes may follow later.",
+                "effects": {
+                  "civilians": -7,
+                  "resources": 10,
+                  "popularity": -10,
+                  "influence": 14
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "title": "The aftershocks",
+      "subtitle": "Every promise now collides with the choices made by another ministry.",
+      "decisions": {
+        "education": [
+          {
+            "title": "The missing cohort",
+            "brief": "War, displacement and housing pressure have pushed thousands of children out of regular schooling.",
+            "question": "How will you bring them back?",
+            "choices": [
+              {
+                "title": "A national catch-up year",
+                "detail": "Guarantee tutoring, meals and transport.",
+                "result": "Attendance rebounds at a price the treasury cannot hide.",
+                "effects": {
+                  "civilians": 14,
+                  "resources": -18,
+                  "popularity": 12,
+                  "influence": 8
+                }
+              },
+              {
+                "title": "Digital classrooms",
+                "detail": "Issue devices and teach remotely.",
+                "result": "Coverage grows quickly; the least stable homes fall furthest behind.",
+                "effects": {
+                  "civilians": 2,
+                  "resources": -8,
+                  "popularity": 3,
+                  "influence": 13
+                }
+              },
+              {
+                "title": "Prioritise examinations",
+                "detail": "Concentrate resources on graduating pupils.",
+                "result": "Results stabilise while younger children wait.",
+                "effects": {
+                  "civilians": -5,
+                  "resources": -5,
+                  "popularity": -6,
+                  "influence": 11
+                }
+              }
+            ]
+          },
+          {
+            "title": "The civic curriculum",
+            "brief": "After months of polarisation, the cabinet asks schools to strengthen democratic resilience.",
+            "question": "What should children be taught about the crisis?",
+            "choices": [
+              {
+                "title": "Teach the controversy",
+                "detail": "Publish evidence and let pupils debate it.",
+                "result": "Classrooms become difficult, serious democratic spaces.",
+                "effects": {
+                  "civilians": 7,
+                  "resources": -7,
+                  "popularity": 12,
+                  "influence": 7
+                }
+              },
+              {
+                "title": "A common national story",
+                "detail": "Issue one approved civic curriculum.",
+                "result": "The message is clear; its silences are clearer.",
+                "effects": {
+                  "civilians": -3,
+                  "resources": -4,
+                  "popularity": 5,
+                  "influence": 14
+                }
+              },
+              {
+                "title": "Keep politics outside",
+                "detail": "Return strictly to core subjects.",
+                "result": "Schools grow quieter, not necessarily wiser.",
+                "effects": {
+                  "civilians": 1,
+                  "resources": 1,
+                  "popularity": -5,
+                  "influence": 8
+                }
+              }
+            ]
+          }
+        ],
+        "foreign": [
+          {
+            "title": "The peace table",
+            "brief": "A ceasefire is possible, but only if the city sits across from a government it has publicly condemned.",
+            "question": "What will you trade for peace?",
+            "choices": [
+              {
+                "title": "Negotiate directly",
+                "detail": "Accept political risk and open talks.",
+                "result": "The guns quiet while accusations of betrayal fill the chamber.",
+                "effects": {
+                  "civilians": 14,
+                  "resources": 8,
+                  "popularity": -4,
+                  "influence": 12
+                }
+              },
+              {
+                "title": "Demand guarantees",
+                "detail": "Wait for allies to underwrite a settlement.",
+                "result": "The coalition holds; fighting continues another month.",
+                "effects": {
+                  "civilians": -8,
+                  "resources": -10,
+                  "popularity": 5,
+                  "influence": 10
+                }
+              },
+              {
+                "title": "Seek total victory",
+                "detail": "Reject talks and escalate support.",
+                "result": "The city looks resolute as the human cost rises.",
+                "effects": {
+                  "civilians": -18,
+                  "resources": -20,
+                  "popularity": 8,
+                  "influence": 17
+                }
+              }
+            ]
+          },
+          {
+            "title": "The reconstruction fund",
+            "brief": "Allies propose a vast recovery fund. Joining means a decade of financial commitments and a seat at the table.",
+            "question": "Will the city sign?",
+            "choices": [
+              {
+                "title": "Lead the fund",
+                "detail": "Contribute generously and shape the programme.",
+                "result": "Influence grows abroad while reserves shrink at home.",
+                "effects": {
+                  "civilians": 6,
+                  "resources": -20,
+                  "popularity": 7,
+                  "influence": 16
+                }
+              },
+              {
+                "title": "Join cautiously",
+                "detail": "Make a limited, conditional contribution.",
+                "result": "The city keeps a voice without owning the project.",
+                "effects": {
+                  "civilians": 4,
+                  "resources": -8,
+                  "popularity": 5,
+                  "influence": 10
+                }
+              },
+              {
+                "title": "Rebuild at home first",
+                "detail": "Decline and protect national reserves.",
+                "result": "The treasury recovers as diplomatic invitations thin out.",
+                "effects": {
+                  "civilians": -2,
+                  "resources": 12,
+                  "popularity": -7,
+                  "influence": 7
+                }
+              }
+            ]
+          }
+        ],
+        "interior": [
+          {
+            "title": "The leaked files",
+            "brief": "Documents show that emergency surveillance reached journalists and opposition councillors.",
+            "question": "How will you respond?",
+            "choices": [
+              {
+                "title": "Publish and investigate",
+                "detail": "Release the files and appoint an independent judge.",
+                "result": "Trust begins to recover; senior officials begin to resign.",
+                "effects": {
+                  "civilians": 6,
+                  "resources": -8,
+                  "popularity": 15,
+                  "influence": 7
+                }
+              },
+              {
+                "title": "Reform in private",
+                "detail": "Limit the programme without admitting wrongdoing.",
+                "result": "The machinery shrinks quietly and suspicion remains.",
+                "effects": {
+                  "civilians": 3,
+                  "resources": -4,
+                  "popularity": 2,
+                  "influence": 12
+                }
+              },
+              {
+                "title": "Defend the service",
+                "detail": "Call the leak a threat to national security.",
+                "result": "The apparatus survives, protected by a harder political line.",
+                "effects": {
+                  "civilians": -8,
+                  "resources": 2,
+                  "popularity": -13,
+                  "influence": 17
+                }
+              }
+            ]
+          },
+          {
+            "title": "The night of fires",
+            "brief": "Coordinated arson strikes public buildings. Evidence is incomplete; pressure for arrests is immediate.",
+            "question": "What standard of certainty will you require?",
+            "choices": [
+              {
+                "title": "Wait for evidence",
+                "detail": "Protect due process despite public anger.",
+                "result": "Investigators move slowly and build a case that may endure.",
+                "effects": {
+                  "civilians": -2,
+                  "resources": -8,
+                  "popularity": 6,
+                  "influence": 7
+                }
+              },
+              {
+                "title": "Targeted emergency arrests",
+                "detail": "Detain named suspects under judicial review.",
+                "result": "The network is disrupted with limited collateral damage.",
+                "effects": {
+                  "civilians": 2,
+                  "resources": -7,
+                  "popularity": 5,
+                  "influence": 12
+                }
+              },
+              {
+                "title": "Sweep the districts",
+                "detail": "Arrest broadly and restore visible control.",
+                "result": "The fires stop; whole neighbourhoods remember the raids.",
+                "effects": {
+                  "civilians": -14,
+                  "resources": -10,
+                  "popularity": -8,
+                  "influence": 18
+                }
+              }
+            ]
+          }
+        ],
+        "social": [
+          {
+            "title": "The winter ledger",
+            "brief": "Energy bills, food prices and unemployment now converge. The welfare system cannot answer every claim.",
+            "question": "Who receives protection first?",
+            "choices": [
+              {
+                "title": "Universal relief",
+                "detail": "Cap bills for every household.",
+                "result": "The measure is simple, popular and extremely expensive.",
+                "effects": {
+                  "civilians": 14,
+                  "resources": -24,
+                  "popularity": 14,
+                  "influence": 11
+                }
+              },
+              {
+                "title": "Target the poorest",
+                "detail": "Means-test cash support and debt relief.",
+                "result": "Help reaches those in greatest need after a maze of forms.",
+                "effects": {
+                  "civilians": 12,
+                  "resources": -13,
+                  "popularity": 7,
+                  "influence": 8
+                }
+              },
+              {
+                "title": "Protect employment",
+                "detail": "Subsidise employers who retain workers.",
+                "result": "Jobs survive, though struggling households wait for wages.",
+                "effects": {
+                  "civilians": 5,
+                  "resources": -11,
+                  "popularity": 4,
+                  "influence": 14
+                }
+              }
+            ]
+          },
+          {
+            "title": "The social contract",
+            "brief": "The crisis is easing. Unions and employers want a permanent settlement for the automated economy.",
+            "question": "What bargain will define the next decade?",
+            "choices": [
+              {
+                "title": "A shorter working week",
+                "detail": "Share productive gains through time.",
+                "result": "Life outside work expands while firms reorganise.",
+                "effects": {
+                  "civilians": 13,
+                  "resources": -8,
+                  "popularity": 12,
+                  "influence": 10
+                }
+              },
+              {
+                "title": "Universal basic income",
+                "detail": "Replace fragmented benefits with one payment.",
+                "result": "Security becomes universal and the fiscal argument begins anew.",
+                "effects": {
+                  "civilians": 15,
+                  "resources": -20,
+                  "popularity": 10,
+                  "influence": 13
+                }
+              },
+              {
+                "title": "Skills in exchange for support",
+                "detail": "Tie benefits to retraining programmes.",
+                "result": "The policy rewards mobility and disciplines those who cannot move.",
+                "effects": {
+                  "civilians": 1,
+                  "resources": -5,
+                  "popularity": 2,
+                  "influence": 15
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
