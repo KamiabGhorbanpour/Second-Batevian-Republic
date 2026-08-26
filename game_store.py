@@ -15,6 +15,10 @@ from typing import Any
 BASE_DIR = Path(__file__).resolve().parent
 STORY = json.loads((BASE_DIR / "story.json").read_text(encoding="utf-8"))
 INITIAL_RESOURCES = STORY["initial"]
+RESOURCE_LABELS = STORY.get(
+    "resource_labels",
+    {"civilians": "NS", "resources": "Guilders", "popularity": "Popularity", "nr": "NR"},
+)
 MINISTRIES = STORY["ministries"]
 MINISTRY_MAP = {ministry["id"]: ministry for ministry in MINISTRIES}
 ROUNDS = STORY["rounds"]
@@ -55,6 +59,7 @@ def init_database() -> None:
                 civilians INTEGER NOT NULL DEFAULT 130,
                 resources INTEGER NOT NULL DEFAULT 120,
                 popularity INTEGER NOT NULL DEFAULT 130,
+                nr INTEGER NOT NULL DEFAULT 130,
                 created_at INTEGER NOT NULL,
                 updated_at INTEGER NOT NULL
             );
@@ -81,6 +86,7 @@ def init_database() -> None:
                 civilians_delta INTEGER NOT NULL,
                 resources_delta INTEGER NOT NULL,
                 popularity_delta INTEGER NOT NULL,
+                nr_delta INTEGER NOT NULL DEFAULT 0,
                 influence_delta INTEGER NOT NULL,
                 created_at INTEGER NOT NULL,
                 UNIQUE(player_id, round, decision_index)
@@ -93,14 +99,37 @@ def init_database() -> None:
                 civilians_delta INTEGER NOT NULL,
                 resources_delta INTEGER NOT NULL,
                 popularity_delta INTEGER NOT NULL,
+                nr_delta INTEGER NOT NULL DEFAULT 0,
                 civilians_after INTEGER NOT NULL,
                 resources_after INTEGER NOT NULL,
                 popularity_after INTEGER NOT NULL,
+                nr_after INTEGER NOT NULL DEFAULT 130,
                 standings_json TEXT NOT NULL,
                 created_at INTEGER NOT NULL,
                 UNIQUE(room_id, round)
             );
             """
+        )
+
+        # Backward-compatible migration for deployments created before the
+        # flowchart version introduced the fourth shared resource (NR).
+        def ensure_column(table: str, column: str, declaration: str) -> None:
+            columns = {
+                row["name"]
+                for row in connection.execute(f"PRAGMA table_info({table})").fetchall()
+            }
+            if column not in columns:
+                connection.execute(
+                    f"ALTER TABLE {table} ADD COLUMN {column} {declaration}"
+                )
+
+        ensure_column("rooms", "nr", f"INTEGER NOT NULL DEFAULT {int(INITIAL_RESOURCES['nr'])}")
+        ensure_column("decisions", "nr_delta", "INTEGER NOT NULL DEFAULT 0")
+        ensure_column("round_results", "nr_delta", "INTEGER NOT NULL DEFAULT 0")
+        ensure_column(
+            "round_results",
+            "nr_after",
+            f"INTEGER NOT NULL DEFAULT {int(INITIAL_RESOURCES['nr'])}",
         )
 
 
@@ -145,8 +174,8 @@ def create_room(name: str, ministry: str) -> dict[str, str]:
             connection.execute(
                 """
                 INSERT INTO rooms
-                    (id, code, status, current_round, civilians, resources, popularity, created_at, updated_at)
-                VALUES (?, ?, 'lobby', 1, ?, ?, ?, ?, ?)
+                    (id, code, status, current_round, civilians, resources, popularity, nr, created_at, updated_at)
+                VALUES (?, ?, 'lobby', 1, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     room_id,
@@ -154,6 +183,7 @@ def create_room(name: str, ministry: str) -> dict[str, str]:
                     INITIAL_RESOURCES["civilians"],
                     INITIAL_RESOURCES["resources"],
                     INITIAL_RESOURCES["popularity"],
+                    INITIAL_RESOURCES["nr"],
                     timestamp,
                     timestamp,
                 ),
@@ -281,6 +311,8 @@ def get_snapshot(code: str, token: str) -> dict[str, Any] | None:
                 "civilians_after": latest["civilians_after"],
                 "resources_after": latest["resources_after"],
                 "popularity_after": latest["popularity_after"],
+                "nr_delta": latest["nr_delta"],
+                "nr_after": latest["nr_after"],
                 "standings": json.loads(latest["standings_json"]),
             }
 
@@ -292,6 +324,7 @@ def get_snapshot(code: str, token: str) -> dict[str, Any] | None:
                 "civilians": room["civilians"],
                 "resources": room["resources"],
                 "popularity": room["popularity"],
+                "nr": room["nr"],
             },
             "me": {"name": me["name"], "ministry": me["ministry"], "influence": me["influence"]},
             "players": players,
@@ -322,10 +355,11 @@ def _finalize_round(connection: sqlite3.Connection, room_id: str, round_number: 
         "civilians": sum(decision["civilians_delta"] for decision in all_decisions),
         "resources": sum(decision["resources_delta"] for decision in all_decisions),
         "popularity": sum(decision["popularity_delta"] for decision in all_decisions),
+        "nr": sum(decision["nr_delta"] for decision in all_decisions),
     }
     after = {
         key: max(0, room[key] + delta[key])
-        for key in ("civilians", "resources", "popularity")
+        for key in ("civilians", "resources", "popularity", "nr")
     }
     roster = connection.execute("SELECT * FROM players WHERE room_id = ?", (room_id,)).fetchall()
     standings = []
@@ -352,9 +386,9 @@ def _finalize_round(connection: sqlite3.Connection, room_id: str, round_number: 
     connection.execute(
         """
         INSERT INTO round_results
-            (id, room_id, round, civilians_delta, resources_delta, popularity_delta,
-             civilians_after, resources_after, popularity_after, standings_json, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (id, room_id, round, civilians_delta, resources_delta, popularity_delta, nr_delta,
+             civilians_after, resources_after, popularity_after, nr_after, standings_json, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             str(uuid.uuid4()),
@@ -363,9 +397,11 @@ def _finalize_round(connection: sqlite3.Connection, room_id: str, round_number: 
             delta["civilians"],
             delta["resources"],
             delta["popularity"],
+            delta["nr"],
             after["civilians"],
             after["resources"],
             after["popularity"],
+            after["nr"],
             json.dumps(public_standings),
             _now(),
         ),
@@ -380,13 +416,14 @@ def _finalize_round(connection: sqlite3.Connection, room_id: str, round_number: 
     connection.execute(
         """
         UPDATE rooms
-        SET civilians = ?, resources = ?, popularity = ?, status = ?, current_round = ?, updated_at = ?
+        SET civilians = ?, resources = ?, popularity = ?, nr = ?, status = ?, current_round = ?, updated_at = ?
         WHERE id = ? AND current_round = ?
         """,
         (
             after["civilians"],
             after["resources"],
             after["popularity"],
+            after["nr"],
             "finished" if finished else "playing",
             round_number if finished else round_number + 1,
             _now(),
@@ -434,8 +471,8 @@ def submit_decision(code: str, token: str, decision_index: int, choice_index: in
                     """
                     INSERT INTO decisions
                         (id, room_id, player_id, ministry, round, decision_index, choice_index,
-                         civilians_delta, resources_delta, popularity_delta, influence_delta, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                         civilians_delta, resources_delta, popularity_delta, nr_delta, influence_delta, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         str(uuid.uuid4()),
@@ -448,6 +485,7 @@ def submit_decision(code: str, token: str, decision_index: int, choice_index: in
                         effects["civilians"],
                         effects["resources"],
                         effects["popularity"],
+                        effects.get("nr", 0),
                         effects["influence"],
                         _now(),
                     ),
