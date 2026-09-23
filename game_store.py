@@ -149,6 +149,13 @@ def _row_dict(row: sqlite3.Row | None) -> dict[str, Any] | None:
     return dict(row) if row is not None else None
 
 
+def _decision_count(round_number: int, ministry: str) -> int:
+    try:
+        return len(ROUNDS[round_number - 1]["decisions"][ministry])
+    except (IndexError, KeyError, TypeError):
+        return 0
+
+
 def create_room(name: str, ministry: str) -> dict[str, str]:
     safe_name = clean_name(name)
     if not safe_name or ministry not in MINISTRY_MAP:
@@ -297,6 +304,7 @@ def get_snapshot(code: str, token: str) -> dict[str, Any] | None:
                     "ministry": player["ministry"],
                     "influence": player["influence"],
                     "submitted": sum(1 for decision in current_decisions if decision["player_id"] == player["id"]),
+                    "expected": _decision_count(room["current_round"], player["ministry"]),
                 }
             )
         players.sort(key=lambda player: player["ministry"])
@@ -316,6 +324,29 @@ def get_snapshot(code: str, token: str) -> dict[str, Any] | None:
                 "standings": json.loads(latest["standings_json"]),
             }
 
+        decision_history: list[dict[str, Any]] = []
+        if room["status"] == "finished":
+            history_rows = connection.execute(
+                """
+                SELECT d.ministry, d.round, d.decision_index, d.choice_index, p.name AS player_name
+                FROM decisions d
+                JOIN players p ON p.id = d.player_id
+                WHERE d.room_id = ?
+                ORDER BY d.round, d.ministry, d.decision_index
+                """,
+                (room["id"],),
+            ).fetchall()
+            decision_history = [
+                {
+                    "ministry": row["ministry"],
+                    "round": row["round"],
+                    "decision_index": row["decision_index"],
+                    "choice_index": row["choice_index"],
+                    "player_name": row["player_name"],
+                }
+                for row in history_rows
+            ]
+
         return {
             "room": {
                 "code": room["code"],
@@ -330,19 +361,27 @@ def get_snapshot(code: str, token: str) -> dict[str, Any] | None:
             "players": players,
             "my_decisions": my_decisions,
             "latest_result": latest_result,
+            "decision_history": decision_history,
         }
 
 
 def _finalize_round(connection: sqlite3.Connection, room_id: str, round_number: int) -> None:
+    room = connection.execute("SELECT * FROM rooms WHERE id = ?", (room_id,)).fetchone()
+    if room is None or room["current_round"] != round_number or room["status"] != "playing":
+        return
+
+    roster_for_expected = connection.execute(
+        "SELECT * FROM players WHERE room_id = ?", (room_id,)
+    ).fetchall()
+    expected = sum(
+        _decision_count(round_number, player["ministry"])
+        for player in roster_for_expected
+    )
     all_decisions = connection.execute(
         "SELECT * FROM decisions WHERE room_id = ? AND round = ?",
         (room_id, round_number),
     ).fetchall()
-    if len(all_decisions) != 8:
-        return
-
-    room = connection.execute("SELECT * FROM rooms WHERE id = ?", (room_id,)).fetchone()
-    if room is None or room["current_round"] != round_number or room["status"] != "playing":
+    if expected <= 0 or len(all_decisions) != expected:
         return
     existing = connection.execute(
         "SELECT 1 FROM round_results WHERE room_id = ? AND round = ?",
@@ -435,7 +474,7 @@ def _finalize_round(connection: sqlite3.Connection, room_id: str, round_number: 
 
 def submit_decision(code: str, token: str, decision_index: int, choice_index: int) -> dict[str, Any]:
     safe_code = clean_code(code)
-    if decision_index not in (0, 1) or not isinstance(choice_index, int):
+    if not isinstance(decision_index, int) or not isinstance(choice_index, int):
         raise GameError("Incomplete decision.")
 
     with DB_LOCK:
@@ -451,6 +490,12 @@ def submit_decision(code: str, token: str, decision_index: int, choice_index: in
             ).fetchone()
             if player is None or player["ministry"] not in MINISTRY_MAP:
                 raise GameError("Player not found.")
+
+            expected_for_player = _decision_count(
+                room["current_round"], player["ministry"]
+            )
+            if decision_index < 0 or decision_index >= expected_for_player:
+                raise GameError("That decision is unavailable.")
 
             mine = connection.execute(
                 "SELECT * FROM decisions WHERE player_id = ? AND round = ? ORDER BY decision_index",
