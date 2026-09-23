@@ -22,5 +22,6 @@ jobs:
           git config user.name "Kamiab Ghorbanpour"
           git config user.email "k.ghorbanpour@tilburguniversity.edu"
           git add main.py
-          git commit -m "Use concise literature overviews in ending flowchart"
+          git commit -m "Refine ending narratives and literature summaries"
           git push origin HEAD:main
+# trigger 2026-09-24
