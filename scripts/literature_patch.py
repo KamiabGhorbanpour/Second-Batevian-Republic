@@ -94,37 +94,31 @@ for phrase in (
 ):
     app = app.replace(phrase, "")
 
-new_citation = '''        def citation_content(choice: dict[str, Any]) -> str:
-            overview = html.escape(choice.get("literature_overview", "") or choice.get("relevance", ""))
-            doi_links = []
-            for link in choice.get("dois", []) or []:
-                safe_link = html.escape(link, quote=True)
-                doi_links.append(f'<a href="{safe_link}" target="_blank" rel="noopener noreferrer">{html.escape(link)}</a>')
-            parts = [
-                '<div class="citation-title">Literature overview</div>',
-                f'<div class="citation-section">{overview}</div>',
-            ]
-            if doi_links:
-                parts.append('<div class="citation-section"><strong>Sources:</strong><br>' + '<br>'.join(doi_links) + '</div>')
-            return ''.join(parts)
-
-        with ui.element("section").classes("final-flow-page"):'''
-
-app, count = re.subn(
-    r'        def citation_content\(choice: dict\[str, Any\]\) -> str:\n.*?\n        with ui\.element\("section"\)\.classes\("final-flow-page"\):',
-    new_citation,
-    app,
-    count=1,
-    flags=re.S,
+# Keep the existing hover/focus citation structure, but make its language human and concise.
+app = app.replace("Evidence from the source matrix", "Literature behind this ending")
+app = app.replace("<strong>Why this outcome:</strong> ", "")
+app = app.replace(
+    "f'<div class=\"citation-section\"><strong>Supporting papers:</strong> {papers}</div>'",
+    "''",
 )
-if count != 1:
-    raise RuntimeError(f"Could not patch citation_content: {count}")
+app = app.replace(
+    "f'<div class=\"citation-section\"><strong>DOI links:</strong><br>{doi_html}</div>'",
+    "f'<div class=\"citation-section\"><strong>Sources:</strong><br>{doi_html}</div>'",
+)
 
-new_heading = '''            with ui.element("div").classes("final-flow-heading"):
-                ui.label("Final results").classes("eyebrow")
-                ui.html("<h2>The Republic's path</h2>")
+# Remove either version of the instructional paragraph shown above the final result.
+for sentence in (
+    "This flowchart reconstructs the cabinet's actual decisions. Focus or hover an outcome to inspect the literature used for that consequence.",
+    "The flowchart below follows the cabinet's three stages. Hover over or focus a large outcome node to see the literature and DOI links behind that consequence.",
+):
+    app = re.sub(
+        r'\s*ui\.label\(\s*' + re.escape(repr(sentence)) + r'\s*\)\.classes\("lead"\)',
+        "",
+        app,
+    )
+    app = app.replace(sentence, "")
 
-            baseline = {"civilians": 130, "resources": 120, "popularity": 130, "nr": 130}
+fate_block = '''            baseline = {"civilians": 130, "resources": 120, "popularity": 130, "nr": 130}
             resource_keys = ("civilians", "resources", "popularity", "nr")
             net_change = sum(int(room[key]) - baseline[key] for key in resource_keys)
             if net_change >= 0:
@@ -151,17 +145,12 @@ new_heading = '''            with ui.element("div").classes("final-flow-heading"
                     ui.label(fate_title).classes("final-fate-title")
                     ui.label(fate_text).classes("final-fate-text")
 
-            with ui.element("div").classes("final-resource-strip"):'''
-
-app, count = re.subn(
-    r'            with ui\.element\("div"\)\.classes\("final-flow-heading"\):\n.*?            with ui\.element\("div"\)\.classes\("final-resource-strip"\):',
-    new_heading,
-    app,
-    count=1,
-    flags=re.S,
-)
-if count != 1:
-    raise RuntimeError(f"Could not patch final heading: {count}")
+'''
+if "final-fate-card" not in app:
+    anchor = '            with ui.element("div").classes("final-resource-strip"):'
+    if anchor not in app:
+        raise RuntimeError("Could not find final-resource-strip anchor")
+    app = app.replace(anchor, fate_block + anchor, 1)
 
 app = app.replace('ui.label("Outcome").classes("flow-kicker")', 'ui.label("Ending").classes("flow-kicker")')
 
